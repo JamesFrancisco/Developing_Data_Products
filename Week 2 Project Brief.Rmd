@@ -1,0 +1,60 @@
+---
+title: "Developing Data Products Week 2 Project"
+author: "James R. Francisco"
+date: "December 30, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("RODBC")
+
+```
+
+## Data Acquisition and Preparation
+
+An Azure SQl Database has been created for the Grand Canyon Council of the Boy Scouts of America that contains contact information for trained BSA leaders serving in certain units. To create the map for this assignment
+
+```{r, echo=FALSE}
+myServer <- "mssqlitt350.database.windows.net"
+myUser <- "visitor"
+myPassword <- "Kp2L@6Gh"
+myDatabase <- "BSAANALYTICS"
+myDriver <- "SQL Server" # Must correspond to an entry in the Drivers tab of "ODBC Data Sources"
+```
+Note that for security reasons the `echo = FALSE` parameter was added to the code chunk creating the connection string to prevent printing of the R code that generated the plot.
+
+```{r}
+library(leaflet)
+library("zipcode")
+data("zipcode")
+connectionString <- paste0(
+    "Driver=", myDriver, 
+    ";Server=", myServer, 
+    ";Database=", myDatabase, 
+    ";Uid=", myUser, 
+    ";Pwd=", myPassword)
+
+conn <- odbcDriverConnect(connectionString)
+sqlQuery <- "SELECT Zip_Code, Position
+from dbo.LDS_Transition_Pool"             # This query selects anonymized data
+df <- sqlQuery(conn, sqlQuery)
+close(conn) # don't leak connections !
+df.clean <- df[-2742,]                    # This statement removes a row with bad data 
+str(df.clean)
+testMap <- merge(df.clean, zipcode, by.x = "Zip_Code", by.y="zip", all.x) # Merging the df data frame with data from the zipcode package.
+```
+
+
+## The map based data display
+
+The map initially shows the state of Arizona with five data clusters
+
+
+```{r}
+testMap %>%
+leaflet() %>%
+addTiles() %>%
+addMarkers(clusterOptions = markerClusterOptions(), popup = testMap$Position) # The popups list unit leader positions in Cub Scout Packs and Boy Scout Troops of the Boy Scouts of America.
+```
+

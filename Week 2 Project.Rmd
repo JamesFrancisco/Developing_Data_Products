@@ -1,0 +1,71 @@
+---
+title: "Developing Data Products Week 2 Project"
+author: "James R. Francisco"
+date: "December 30, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("RODBC")
+library(leaflet)
+```
+
+## Introduction to the problem
+
+In May of 2018 The CHurch of Jesus Christ of Latter-Day Saints announced that it would cease sponsoring scouting units in the United States and Canada in favor of a unified approach to youth activities throughout the world. Families who are currently involved with scouting in those countries have been encouraged to associate with existing troops and packs sponsored by other chartering organizations, or found new units. As the volunteer data scientist for the Grand Canyon Council of the Boy Scouts of America, one of my tasks is creating data products that will help council leaders recruit cadres of adults to help establish new units to absorb the boys from the LDS Church units who are remaining affiliated with the scouting movement. This project is an interactive map of the U.S. Zip Codes where leaders in existing LDS Church units who have completed BSA Unit Leader Training live.
+
+## Data Acquisition and Preparation
+
+An Azure SQl Database has been created for the Grand Canyon Council of the Boy Scouts of America that contains contact information for trained BSA leaders serving in certain units. To create the map for this assignment
+
+```{r, echo=FALSE}
+myServer <- "mssqlitt350.database.windows.net"
+myUser <- "visitor"
+myPassword <- "Kp2L@6Gh"
+myDatabase <- "BSAANALYTICS"
+myDriver <- "SQL Server" # Must correspond to an entry in the Drivers tab of "ODBC Data Sources"
+```
+Note that for security reasons the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+connectionString <- paste0(
+    "Driver=", myDriver, 
+    ";Server=", myServer, 
+    ";Database=", myDatabase, 
+    ";Uid=", myUser, 
+    ";Pwd=", myPassword)
+
+conn <- odbcDriverConnect(connectionString)
+sqlQuery <- "SELECT Zip_Code, Position
+from dbo.LDS_Transition_Pool"
+df <- sqlQuery(conn, sqlQuery)
+close(conn) # don't leak connections !
+df.clean <- df[-2742,]
+str(df.clean)
+```
+
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+
+
+```{r}
+library("magrittr", lib.loc="~/R/win-library/3.5")
+my_map <- leaflet() %>% addTiles() %>%
+addMarkers(lat=41.2980803, lng=-110.5898801,
+popup="Jeff Leek's Office")
+my_map
+```
+
