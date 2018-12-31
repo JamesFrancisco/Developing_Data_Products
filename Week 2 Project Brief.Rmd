@@ -13,7 +13,7 @@ library("RODBC")
 
 ## Data Acquisition and Preparation
 
-An Azure SQl Database has been created for the Grand Canyon Council of the Boy Scouts of America that contains contact information for trained BSA leaders serving in certain units. To create the map for this assignment
+An Azure SQl Database has been created for the Grand Canyon Council of the Boy Scouts of America that contains contact information for trained BSA leaders serving in certain units. To create the map for this assignment, data was extracted from the database and processed.
 
 ```{r, echo=FALSE}
 myServer <- "mssqlitt350.database.windows.net"
