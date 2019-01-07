@@ -1,0 +1,77 @@
+---
+title: "Data Analysis with Plotly"
+author: "James R. Francisco"
+date: "January 5, 2019"
+output: ioslides_presentation
+smaller: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library("pastecs")
+library("gclus")
+library("plotly")
+```
+
+## The Assignment
+
+Create a web page presentation using R Markdown that features a plot created with Plotly. Host your webpage on either GitHub Pages, RPubs, or NeoCities. Your webpage must contain the date that you created the document, and it must contain a plot created with Plotly. 
+
+## The Problem
+
+There are a number of factors that influence the rate at which Cub Scouts, the Boy Scouts of America program for 1st through 4th Grade children, earn achievements that acknowledge the learning activities that they have completed. In an attempt to build a model to guide adult leaders at the district level. a data set was assembled with the following elements:
+
+- % Trained Leaders (Den Leaders, Cubmasters)
+- % Youth Retention (Youth in the pack more than 1 year)
+- % Religous Units (Percent of units in the district sponsored by a single religious tradition)
+- Total Units (total number of Cub Scout Packs in a district)
+
+## Collecting and Processing Data{.smaller}
+
+The data for the analysis was gathered by averaging 12 months of data for each parameter from 22 Boy Scouts of America districts in the Western United States. An initial linear regression produces a model with the following coefficients 
+
+```{r, echo = FALSE}
+BSA.Advancement.Correlation <- 
+  +read.csv("~/Scouting Analytics/Advancement Correlation.csv")
+names(BSA.Advancement.Correlation)[1] = "Trained_Leader"
+init_model.cs <- lm(CS_Adv ~ Trained_Leader+Youth_Retention+Rel_Units+total_units, data = BSA.Advancement.Correlation)
+#
+```
+
+
+```{r}
+init_model.cs
+```
+
+## Collecting and Processing Data 2{.smaller}
+In order to create an optimized model, the AIC algorithm was used to generate the best model in two iterations.
+
+```{r}
+
+best_model <- step(init_model.cs, direction = "both")
+```
+
+## Best Model v. Base Model{.smaller}
+
+A base model is created for comparison. ANOVA was used to compare the models.
+
+```{r, echo ="TRUE"}
+base_model.cs <- lm(CS_Adv ~ Trained_Leader, data = BSA.Advancement.Correlation)
+anova(base_model.cs, best_model)
+```
+
+The variance is significant at the 99% level
+
+
+## Slide with Plot
+
+The 3-D plot takes a few seconds to load.
+
+```{r}
+plot_ly(BSA.Advancement.Correlation, x = ~Trained_Leader, y = ~Rel_Units, z = ~best_model$fitted.values) %>%
+  add_markers() %>%
+  layout(scene = list(xaxis = list(title = '%Trained Leaders'),
+                    yaxis = list(title = '%Religious Units'),
+                    zaxis = list(title = '%Cub Scouts Advancing')))
+```
+
