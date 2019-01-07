@@ -62,18 +62,11 @@ anova(base_model.cs, best_model)
 
 The variance is significant at the 99% level
 
-
-<<<<<<< HEAD
 ## Slide with Plot{.smaller}
 
 This page displays 3-D graphics that may take a few seconds to load.
 
 If you get a  "WebGL is not supported by your browser......" error on this page, you need to enable 3-d graphics in the settings of your browser. 
-=======
-## Slide with Plot
-
-The 3-D plot takes a few seconds to load.
->>>>>>> origin/gh-pages
 
 ```{r}
 plot_ly(BSA.Advancement.Correlation, x = ~Trained_Leader, y = ~Rel_Units, z = ~best_model$fitted.values) %>%
