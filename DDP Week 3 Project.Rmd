@@ -62,7 +62,6 @@ anova(base_model.cs, best_model)
 
 The variance is significant at the 99% level
 
-
 ## Slide with Plot{.smaller}
 
 This page displays 3-D graphics that may take a few seconds to load.
