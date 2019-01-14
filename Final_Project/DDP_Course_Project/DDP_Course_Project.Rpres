@@ -1,0 +1,61 @@
+Developing Data Products Course Project
+========================================================
+author: James Francisco
+date: Jan. 12, 2019
+autosize: true
+
+```{r, echo=FALSE}
+library(datasets)
+library(dplyr)
+library(pastecs)
+library("gclus")
+```
+
+Introduction
+========================================================
+This presentation and the associated shiny app conclude the Coursera course: Developing Data products. 
+
+Included in this project are:
+
+- this presentation, providing an overview, code examples and links
+- a shiny app hosted on shinyapp.io
+- the corresponding source code hosted via github
+
+Description of the app
+========================================================
+
+This app has been developed for the Developing Data Products Course, from Coursera. This app helps a user to choose a car for daily commuting, using the mtcars dataset from [R]. The mtcars data set is somewhat stale. To make this app useful for drivers now, a data frame with data for current cars would need to be built. 
+
+
+Mutating Data
+========================================================
+
+In order to facilitate sorting, the values for the transmission field in the data was transformed from 'automatic' and 'manual' to '0' and '1'.
+
+```{r}
+data <- mutate(mtcars, am = ifelse(am=="Automatic", 0, 1))
+head(data)
+```
+
+MPG Comparisons
+========================================================
+
+```{r, echo=FALSE, fig.height= 10}
+opt = par(mfrow = c(2,1))
+newcars <-mtcars[ which (mtcars$carb <6),]
+boxplot(mpg ~ am, data=mtcars, col=(c("gold","darkgreen")), xlab="Transmission (0 = Automatic, 1 = Manual)", ylab="Miles per Gallon", main="Boxplot of MPG vs. Transmission")
+boxplot(mpg ~ cyl, data=mtcars,  col=(c("gold","darkgreen", "blue")), ylab="Miles per Gallon", xlab="Cylinders", main="Boxplot of MPG vs. Number of Cylinders")
+```
+
+Graphical comparisons can be created for the parameters in the application to show the effects on performance from the car's characteristics.
+***
+```{r, echo=FALSE}
+dta1 <- mtcars[c(1,2,3,4,9)] # get data
+dta1.r <- abs(cor(dta1)) # get correlations
+dta1.col <- dmat.color(dta1.r) # get colors
+# reorder variables so those with highest correlation
+# are closest to the diagonal
+dta1.o <- order.single(dta1.r)
+cpairs(dta1, dta1.o, panel.colors=dta1.col, gap=.5,main="Variables Ordered and Colored by Correlation" )
+```
+
